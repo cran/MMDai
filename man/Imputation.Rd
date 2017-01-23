@@ -4,38 +4,21 @@
 \alias{Imputation}
 \title{Imputation}
 \usage{
-Imputation(data, theta, psi, m, method = "Sampling")
+Imputation(data, JT, method = "MaxProb")
 }
 \arguments{
 \item{data}{- incomplete dataset}
 
-\item{theta}{- a vector that sum to 1, denotes probability of latent class.}
+\item{JT}{- joint distribution used}
 
-\item{psi}{- an array with dimension c(k,p,d), specific probability for each variables in each component.}
-
-\item{m}{- number of trials}
-
-\item{method}{- methods for imputation, including Sampling and Expectation.}
+\item{method}{- methods for imputation, including "Sampling" and "MaxProb".
+In "Sampling" method, sample missing values from the conditional distribution randomly.
+In "MaxProb" method, impute missing values with maximal probability from the conditional distribution.}
 }
 \value{
-CompleteData - dataset has been imputated.
+ImputedData - dataset has been imputated.
 }
 \description{
-This function is used to perform multiple imputation for missing data given the estimates of theta and psi.
-}
-\note{
-k - number of components
-
-n - number of observations
-
-p - number of variables
-
-d - number of choices. Here d are identical for all variables.
-}
-\examples{
-data("IncompleteData")
-theta <- IncompleteData$theta
-psi <- IncompleteData$psi
-Imputation(data = IncompleteData$data,theta,psi,m = 10,method = "Sampling")
+This function is used to perform multiple imputation for missing data given the joint distribution.
 }
 

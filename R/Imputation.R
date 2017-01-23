@@ -1,62 +1,63 @@
 #' Imputation
-#' @description This function is used to perform multiple imputation for missing data given the estimates of theta and psi.
+#' @description This function is used to perform multiple imputation for missing data given the joint distribution.
 #' @param data - incomplete dataset
-#' @param theta - a vector that sum to 1, denotes probability of latent class.
-#' @param psi - an array with dimension c(k,p,d), specific probability for each variables in each component.
-#' @param m - number of trials
-#' @param method - methods for imputation, including Sampling and Expectation.
-#' @note  k - number of components
-#' @note  n - number of observations
-#' @note  p - number of variables
-#' @note  d - number of choices. Here d are identical for all variables.
-#' @return CompleteData - dataset has been imputated.
+#' @param JT - joint distribution used
+#' @param method - methods for imputation, including "Sampling" and "MaxProb".
+#' In "Sampling" method, sample missing values from the conditional distribution randomly.
+#' In "MaxProb" method, impute missing values with maximal probability from the conditional distribution.
+#' @return ImputedData - dataset has been imputated.
 #' @import stats
-#' @examples
-#' data("IncompleteData")
-#' theta <- IncompleteData$theta
-#' psi <- IncompleteData$psi
-#' Imputation(data = IncompleteData$data,theta,psi,m = 10,method = "Sampling")
 #' @export
 
 
-Imputation<-function(data,theta,psi,m,method = "Sampling"){
+Imputation<-function(data, JT, method = "MaxProb"){
   # dimensional parameters
-  n<-dim(data)[1]    # number of samples
-  p<-dim(data)[2]    # number of variables
-  d<-dim(data)[3]    # number of categories
-  k<-length(theta)   # number of components
+  p<-ncol(data)    # number of variables
+  n<-nrow(data)    # number of observations
 
   # multiple imputation
-  CompleteData<-data
+  ImputedData<-data
 
-  # Sampling method
-  if(method == "Sampling"){
+  # MaxProb method
+  if(method == "MaxProb"){
+    # imputation
     for(i in 1:n){
-      for(j in 1:p){
-        if(is.na(data[i,j,1])){
-          h<-rmultinom(1,1,theta)
-          CompleteData[i,j,]<-rmultinom(1,m,psi[h,j,])
+      if(any(is.na(data[i,]))){
+        CondJT<-JT
+        for(j in 1:p){
+          if(!is.na(data[i,j])){
+            CondJT<-CondJT[CondJT[,j]==data[i,j],]
+          }
         }
+
+        imp<-CondJT[which.max(CondJT[,p+1]),1:p]
+
+        ImputedData[i,]<-imp
       }
     }
   }
 
-  # Expectation method
-  if(method == "Expectation"){
-    jointpsi<-matrix(0,nrow = p, ncol = d)
-    for(h in 1:k){
-      jointpsi<-jointpsi+theta[h]*psi[h,,]
-    }
+
+  # Sampling method
+  if(method == "Sampling"){
+    # imputation
     for(i in 1:n){
-      for(j in 1:p){
-        if(is.na(data[i,j,1])){
-          CompleteData[i,j,]<-rmultinom(1,m,jointpsi[j,])
+      if(any(is.na(data[i,]))){
+        CondJT<-JT
+        for(j in 1:p){
+          if(!is.na(data[i,j])){
+            CondJT<-CondJT[CondJT[,j]==data[i,j],]
+          }
         }
+
+        index<-which(rmultinom(1,1,CondJT[,p+1])==1)
+
+        ImputedData[i,]<-CondJT[index,1:p]
       }
     }
   }
 
   # output
-  return(list(CompleteData = CompleteData))
+  return(ImputedData)
 
 }
