@@ -4,12 +4,14 @@
 \alias{Imputation}
 \title{Imputation}
 \usage{
-Imputation(data, JT, method = "MaxProb")
+Imputation(data, theta, psi, method = "MaxProb")
 }
 \arguments{
 \item{data}{- incomplete dataset}
 
-\item{JT}{- joint distribution used}
+\item{theta}{- vector of probability for each component}
+
+\item{psi}{- specific probability for each variable in each component}
 
 \item{method}{- methods for imputation, including "Sampling" and "MaxProb".
 In "Sampling" method, sample missing values from the conditional distribution randomly.

@@ -4,15 +4,21 @@
 \alias{Correlation}
 \title{Correlation estimation}
 \usage{
-Correlation(JT)
+Correlation(theta, psi, v1 = 1, v2 = 2)
 }
 \arguments{
-\item{JT}{- joint distribution table used}
+\item{theta}{- vector of probability for each component}
+
+\item{psi}{- specific probability for each variable in each component}
+
+\item{v1}{- first variable}
+
+\item{v2}{- second variable}
 }
 \value{
-cor - correlation matrix
+Cor - correlation
 }
 \description{
-Calculate correlation matrix among variables
+Calculate Pearson's correlation between two specific variables
 }
 

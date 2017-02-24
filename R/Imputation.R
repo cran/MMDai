@@ -1,7 +1,8 @@
 #' Imputation
 #' @description This function is used to perform multiple imputation for missing data given the joint distribution.
 #' @param data - incomplete dataset
-#' @param JT - joint distribution used
+#' @param theta - vector of probability for each component
+#' @param psi - specific probability for each variable in each component
 #' @param method - methods for imputation, including "Sampling" and "MaxProb".
 #' In "Sampling" method, sample missing values from the conditional distribution randomly.
 #' In "MaxProb" method, impute missing values with maximal probability from the conditional distribution.
@@ -10,10 +11,17 @@
 #' @export
 
 
-Imputation<-function(data, JT, method = "MaxProb"){
+Imputation<-function(data, theta, psi, method = "MaxProb"){
   # dimensional parameters
   p<-ncol(data)    # number of variables
   n<-nrow(data)    # number of observations
+  k<-length(theta) # number of components
+
+  d<-rep(0,p)   # category for each variable
+  for(j in 1:p){
+    d[j]<-ncol(psi[[j]])
+  }
+
 
   # multiple imputation
   ImputedData<-data
@@ -23,16 +31,25 @@ Imputation<-function(data, JT, method = "MaxProb"){
     # imputation
     for(i in 1:n){
       if(any(is.na(data[i,]))){
-        CondJT<-JT
-        for(j in 1:p){
-          if(!is.na(data[i,j])){
-            CondJT<-CondJT[CondJT[,j]==data[i,j],]
+        miss<-which(is.na(data[i,]))
+        obs<-which(!is.na(data[i,]))
+
+        for(j in miss){
+          CondProb<-rep(0,d[j])
+          for(c in 1:d[j]){
+            for(h in 1:k){
+              prob<-theta[h]*psi[[j]][h,c]
+              for(jj in obs){
+                prob<-prob*psi[[jj]][h,data[i,jj]]
+              }
+              CondProb[c]<-CondProb[c]+prob
+            }
           }
+
+          ImputedData[i,j]<-which.max(CondProb)
+
         }
 
-        imp<-CondJT[which.max(CondJT[,p+1]),1:p]
-
-        ImputedData[i,]<-imp
       }
     }
   }
@@ -43,16 +60,25 @@ Imputation<-function(data, JT, method = "MaxProb"){
     # imputation
     for(i in 1:n){
       if(any(is.na(data[i,]))){
-        CondJT<-JT
-        for(j in 1:p){
-          if(!is.na(data[i,j])){
-            CondJT<-CondJT[CondJT[,j]==data[i,j],]
+        miss<-which(is.na(data[i,]))
+        obs<-which(!is.na(data[i,]))
+
+        for(j in miss){
+          CondProb<-rep(0,d[j])
+          for(c in 1:d[j]){
+            for(h in 1:k){
+              prob<-theta[h]*psi[[j]][h,c]
+              for(jj in obs){
+                prob<-prob*psi[[jj]][h,data[i,jj]]
+              }
+              CondProb[c]<-CondProb[c]+prob
+            }
           }
+
+          ImputedData[i,j]<-which(rmultinom(1,1,CondProb)==1)
+
         }
 
-        index<-which(rmultinom(1,1,CondJT[,p+1])==1)
-
-        ImputedData[i,]<-CondJT[index,1:p]
       }
     }
   }

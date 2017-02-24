@@ -1,51 +1,53 @@
 #' mutual information
 #' @description This function is used to calculate the mutual information (MI) and maximal information coefficient (MIC) between two variables.
-#' @param JT - joint distribution table used
+#' @param theta - vector of probability for each component
+#' @param psi - specific probability for each variable in each component
 #' @param v1 - first variable
 #' @param v2 - second variable
 #' @return MI - mutual information between two variables
 #' @return MIC - maximal information coefficient between two variables
 #' @export
 
-MutualInfo<-function(JT, v1, v2){
+MutualInfo<-function(theta, psi, v1, v2){
+  # dimensional parameters
+  p<-length(psi)    # number of variables
+  k<-length(theta) # number of components
 
-  # dimension parameter
-  p<-ncol(JT)-1    # number of variables
-
-  d<-rep(0,p)       # number of categories
+  d<-rep(0,p)   # category for each variable
   for(j in 1:p){
-    d[j]<-length(unique(JT[,j]))
+    d[j]<-ncol(psi[[j]])
   }
-
 
   # Mutual Information
   Hv1<-0
   for(c1 in 1:d[v1]){
-    pv1<-sum(JT[JT[,v1]==c1,p+1])
-    if(pv1==0)
-      next
-    else
-      Hv1<-Hv1-pv1*log(pv1)
+    prob<-0
+    for(h in 1:k){
+      prob<-prob+theta[h]*psi[[v1]][h,c1]
+    }
+
+    Hv1<-Hv1-prob*log(prob)
   }
 
   Hv2<-0
   for(c2 in 1:d[v2]){
-    pv2<-sum(JT[JT[,v2]==c2,p+1])
-    if(pv2==0)
-      next
-    else
-      Hv2<-Hv2-pv2*log(pv2)
+    prob<-0
+    for(h in 1:k){
+      prob<-prob+theta[h]*psi[[v2]][h,c2]
+    }
+
+    Hv2<-Hv2-prob*log(prob)
   }
 
   Hv1v2<-0
   for(c1 in 1:d[v1]){
     for(c2 in 1:d[v2]){
-      pv1v2<-sum(JT[JT[,v1]==c1 & JT[,v2]==c2,p+1])
+      prob<-0
+      for(h in 1:k){
+        prob<-prob+theta[h]*psi[[v1]][h,c1]*psi[[v2]][h,c2]
+      }
 
-      if(pv1v2==0)
-        next
-      else
-        Hv1v2<-Hv1v2-pv1v2*log(pv1v2)
+      Hv1v2<-Hv1v2-prob*log(prob)
     }
   }
 

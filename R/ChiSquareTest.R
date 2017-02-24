@@ -1,32 +1,38 @@
 #' Chi-Square test
 #' @description Test the independence of two variables
-#' @param JT - joint distribution table used
+#' @param theta - vector of probability for each component
+#' @param psi - specific probability for each variable in each component
 #' @param v1 - first variable
 #' @param v2 - second variable
 #' @return chi_square - chi_square test statistic
 #' @return p_value - p value in the test
 #' @export
 
-ChiSquareTest<-function(JT,v1,v2){
+ChiSquareTest<-function(theta, psi, v1 = 1, v2 =2){
   # dimensional parameters
-  p<-ncol(JT)-1      # number of variables
-  d<-rep(0,2)        # number of categories
-  d[1]<-length(unique(JT[,v1]))
-  d[2]<-length(unique(JT[,v2]))
+  p<-length(psi)    # number of variables
+  k<-length(theta) # number of components
+
+  d<-rep(0,p)   # category for each variable
+  for(j in 1:p){
+    d[j]<-ncol(psi[[j]])
+  }
 
   # observation table
-  obs<-matrix(0,nrow = d[1],ncol = d[2])
-  for(d1 in 1:d[1]){
-    for(d2 in 1:d[2]){
-      obs[d1,d2]<-sum(JT[JT[,v1]==d1 & JT[,v2]==d2,p+1])
+  obs<-matrix(0,nrow = d[v1],ncol = d[v2])
+  for(c1 in 1:d[v1]){
+    for(c2 in 1:d[v2]){
+      for(h in 1:k){
+        obs[c1,c2]<-obs[c1,c2]+theta[h]*psi[[v1]][h,c1]*psi[[v2]][h,c2]
+      }
     }
   }
 
   # expectation table
-  exp<-matrix(0,nrow = d[1],ncol = d[2])
-  for(d1 in 1:d[1]){
-    for(d2 in 1:d[2]){
-      exp[d1,d2]<-sum(obs[d1,])*sum(obs[,d2])
+  exp<-matrix(0,nrow = d[v1],ncol = d[v2])
+  for(c1 in 1:d[v1]){
+    for(c2 in 1:d[v2]){
+      exp[c1,c2]<-sum(obs[c1,])*sum(obs[,c2])
     }
   }
 
@@ -39,8 +45,6 @@ ChiSquareTest<-function(JT,v1,v2){
   p_value<-1-pchisq(chi_square,df)
 
   # output
-  return(list(chi_square = chi_square,p_value = p_value))
-
-
+  return(list(chi_square = chi_square, p_value = p_value))
 
 }

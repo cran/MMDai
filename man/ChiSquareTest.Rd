@@ -4,10 +4,12 @@
 \alias{ChiSquareTest}
 \title{Chi-Square test}
 \usage{
-ChiSquareTest(JT, v1, v2)
+ChiSquareTest(theta, psi, v1 = 1, v2 = 2)
 }
 \arguments{
-\item{JT}{- joint distribution table used}
+\item{theta}{- vector of probability for each component}
+
+\item{psi}{- specific probability for each variable in each component}
 
 \item{v1}{- first variable}
 

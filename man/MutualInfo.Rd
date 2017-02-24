@@ -4,10 +4,12 @@
 \alias{MutualInfo}
 \title{mutual information}
 \usage{
-MutualInfo(JT, v1, v2)
+MutualInfo(theta, psi, v1, v2)
 }
 \arguments{
-\item{JT}{- joint distribution table used}
+\item{theta}{- vector of probability for each component}
+
+\item{psi}{- specific probability for each variable in each component}
 
 \item{v1}{- first variable}
 
