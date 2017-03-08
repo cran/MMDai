@@ -1,5 +1,5 @@
 #' Real application dataset
-#' @name Example
+#' @name MovieRate
 #' @docType data
 #' @author Chaojie Wang
 #' @keywords data

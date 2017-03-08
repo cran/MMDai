@@ -4,14 +4,14 @@
 \alias{JointTable}
 \title{Generate joint distribution table}
 \usage{
-JointTable(p, d, alpha = 0.5)
+JointTable(p, d, prior = 0.5)
 }
 \arguments{
 \item{p}{- number of variables}
 
 \item{d}{- number of categories}
 
-\item{alpha}{- prior parameter}
+\item{prior}{- prior parameter}
 }
 \value{
 JT - generated joint distribution table

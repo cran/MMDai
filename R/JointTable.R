@@ -2,11 +2,11 @@
 #' @description This function is used to generate general joint distribution table
 #' @param p - number of variables
 #' @param d - number of categories
-#' @param alpha - prior parameter
+#' @param prior - prior parameter
 #' @return JT - generated joint distribution table
 #' @export
 
-JointTable<-function(p, d, alpha = 0.5){
+JointTable<-function(p, d, prior = 0.5){
   # empty joint table
   JT<-matrix(0,nrow = prod(d),ncol = p+1)
 
@@ -21,7 +21,7 @@ JointTable<-function(p, d, alpha = 0.5){
   }
 
   # joint probability
-  probability<-rdirichlet(1,rep(alpha,prod(d)))
+  probability<-rdirichlet(1,rep(prior,prod(d)))
   JT[,p+1]<-probability
 
   # output
