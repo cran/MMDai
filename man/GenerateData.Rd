@@ -4,9 +4,8 @@
 \alias{GenerateData}
 \title{Generate random dataset}
 \usage{
-GenerateData(n, p, d, method = "MixMultinomial", k = 3,
-  theta = rdirichlet(1, rep(10, k)), psi = InitialPsi(p, d, k),
-  JT = JointTable(p, d))
+GenerateData(n, p, d, k = 3, theta = rdirichlet(1, rep(10, k)),
+  psi = InitialPsi(p, d, k))
 }
 \arguments{
 \item{n}{- number of samples}
@@ -15,28 +14,21 @@ GenerateData(n, p, d, method = "MixMultinomial", k = 3,
 
 \item{d}{- a vector which denotes the number of categories for each variable. It could be distinct among variables.}
 
-\item{method}{- the method to generate random datasets, including "MixMultinomial" and "General".
-In "MixMultinomial" method, the dataset follows finite mixture of multinomial distribution
-In "General" method, the dataset follows general joint distribution.}
+\item{k}{- number of latent classes}
 
-\item{k}{- parameter used in "MixMultinomial" method}
+\item{theta}{- probability for latent class}
 
-\item{theta}{- parameter used in "MixMultinomial" method}
-
-\item{psi}{- parameter used in "MixMultinomial" method}
-
-\item{JT}{- parameter used in "General" method}
+\item{psi}{- probability for specific category}
 }
 \value{
 data - generated random dataset, a matrix with n rows and p columns.
 }
 \description{
-This function is used to generate random datasets. It helps to evaluate the performance of this package.
+This function is used to generate random datasets following mixture of product multinomial distribution
 }
 \examples{
 # dimension parameters
 n<-200; p<-5; d<-rep(2,p);
 # generate complete data
-Complete<-GenerateData(n, p, d, k = 3, method = "MixMultinomial")
+Complete<-GenerateData(n, p, d, k = 3)
 }
-

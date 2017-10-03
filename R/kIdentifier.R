@@ -1,8 +1,8 @@
-#' Identify the number of components k
+#' Identify the suitable number of components k
 #' @description This function is used to find the suitable number of components k.
 #' @param data - data in matrix formation with n rows and p columns
 #' @param d - number of categories for each variable
-#' @param T - number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.
+#' @param TT - number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.
 #' @param alpha - hyperparameter that could be regarded as the pseudo-count of the number of samples in the new component
 #' @return k_est - posterior estimation of k
 #' @return k_track - track of k in the iteration process
@@ -10,8 +10,7 @@
 #' @importFrom DirichletReg rdirichlet
 #' @export
 
-kIdentifier<-function(data, d, T = 1000, alpha = 0.25){
-
+kIdentifier<-function(data, d, TT = 1000, alpha = 0.25){
   # dimensional parameters
   n<-nrow(data)    # number of observations
   p<-ncol(data)    # number of variables
@@ -35,23 +34,16 @@ kIdentifier<-function(data, d, T = 1000, alpha = 0.25){
 
   # gibbs sampler
   # parameter track
-  k_track<-rep(n,T)
+  k_track<-rep(n,TT)
   # iteration
-  for(t in 2:T){
+  for(t in 1:TT){
     # update z
     for(i in 1:n){
-      # update z[i]
-      nn<-rep(0,k)
-      zz<-z[-i]
-      for(h in 1:k){
-        nn[h]<-length(zz[zz==h])
-      }
-
       # component probability
+      zz<-z[-i]
       f<-rep(0,k+1)
       for(h in 1:k){
-        f[h]<-nn[h]/(n+alpha-1)
-        # likelihood
+        f[h]<-length(zz[zz==h])/(n+alpha-1)
         for(j in 1:p){
           f[h]<-f[h]*(psi[[j]][h,data[i,j]])
         }
@@ -75,29 +67,23 @@ kIdentifier<-function(data, d, T = 1000, alpha = 0.25){
           psi[[j]]<-rbind(psi[[j]],rdirichlet(1,beta))
         }
       }
-
     }
 
     # update k
     class<-unique(z)
     k<-length(class)
 
-    z_temp<-z
+    # reorder class to avoid label-switching
+    nn<-rep(0,k)
     for(h in 1:k){
-      z[z_temp==class[h]]<-h
+      nn[h]<-length(z[z==class[h]])
     }
 
-    psi_temp<-psi
-    for(j in 1:p){
-      for(h in 1:k){
-        psi[[j]][h,]<-psi_temp[[j]][class[h],]
-      }
-      psi[[j]]<-psi[[j]][1:k,]
-
-      # avoid reduce to vector
-      if(k==1){
-        psi[[j]]<-matrix(psi[[j]],nrow = 1)
-      }
+    o<-order(nn,decreasing = TRUE)
+    nn<-nn[o]
+    z_temp<-z
+    for(h in 1:k){
+      z[z_temp==class[o[h]]]<-h
     }
 
     # update psi
@@ -114,13 +100,11 @@ kIdentifier<-function(data, d, T = 1000, alpha = 0.25){
 
     # parameter track
     k_track[t]<-k
-
   }
 
   # parameter estimate
-  k_est<-as.numeric(names(which.max(table(k_track[(T/2+1):T]))))
+  k_est<-as.numeric(names(which.max(table(k_track[(TT/2+1):TT]))))
 
   # output
   return(list(k_track = k_track,k_est = k_est))
-
 }

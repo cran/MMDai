@@ -4,7 +4,7 @@
 \alias{ParEst}
 \title{Estimate theta and psi in multinomial mixture model}
 \usage{
-ParEst(data, d, k, T = 1000)
+ParEst(data, d, k, TT = 1000)
 }
 \arguments{
 \item{data}{- data in matrix formation with n rows and p columns}
@@ -13,7 +13,7 @@ ParEst(data, d, k, T = 1000)
 
 \item{k}{- number of components}
 
-\item{T}{- number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.}
+\item{TT}{- number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.}
 }
 \value{
 theta - vector of probability for each component
@@ -23,4 +23,3 @@ psi - specific probability for each variable in each component
 \description{
 This function is used to estimate theta and psi in multinomial mixture model given the number of components k.
 }
-

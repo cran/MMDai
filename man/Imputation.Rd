@@ -4,7 +4,7 @@
 \alias{Imputation}
 \title{Imputation}
 \usage{
-Imputation(data, theta, psi, method = "MaxProb")
+Imputation(data, theta, psi)
 }
 \arguments{
 \item{data}{- incomplete dataset}
@@ -12,10 +12,6 @@ Imputation(data, theta, psi, method = "MaxProb")
 \item{theta}{- vector of probability for each component}
 
 \item{psi}{- specific probability for each variable in each component}
-
-\item{method}{- methods for imputation, including "Sampling" and "MaxProb".
-In "Sampling" method, sample missing values from the conditional distribution randomly.
-In "MaxProb" method, impute missing values with maximal probability from the conditional distribution.}
 }
 \value{
 ImputedData - dataset has been imputated.
@@ -23,4 +19,3 @@ ImputedData - dataset has been imputated.
 \description{
 This function is used to perform multiple imputation for missing data given the joint distribution.
 }
-

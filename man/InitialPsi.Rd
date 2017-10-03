@@ -19,4 +19,3 @@ psi - a list in that each component has equal weight
 \description{
 This function creates a psi list in that each component has equal weight
 }
-

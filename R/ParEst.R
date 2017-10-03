@@ -3,15 +3,14 @@
 #' @param data - data in matrix formation with n rows and p columns
 #' @param d - number of categories for each variable
 #' @param k - number of components
-#' @param T - number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.
+#' @param TT - number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.
 #' @return theta - vector of probability for each component
 #' @return psi - specific probability for each variable in each component
 #' @import stats
 #' @importFrom DirichletReg rdirichlet
 #' @export
 
-ParEst<-function(data, d, k, T = 1000){
-
+ParEst<-function(data, d, k, TT = 1000){
   # dimensional parameters
   p<-ncol(data)    # number of variables
   n<-nrow(data)    # number of observations
@@ -40,20 +39,17 @@ ParEst<-function(data, d, k, T = 1000){
 
   # gibbs sampler
   # initial log posterior probability
-  pp<-0
+  pp_max<-0
   for(i in 1:n){
     for(j in 1:p){
-      pp<-pp+log(psi[[j]][z[i],data[i,j]])
+      pp_max<-pp_max+log(psi[[j]][z[i],data[i,j]])
     }
   }
-
-  # posterior probability track
-  pp_track<-rep(pp,T)
 
   # initial estimator
   theta_est<-theta
   psi_est<-psi
-  for(t in 2:T){
+  for(t in 1:TT){
     # update z
     z<-rep(0,n)   # latent class
     for(i in 1:n){
@@ -69,13 +65,21 @@ ParEst<-function(data, d, k, T = 1000){
       z[i]<-which(rmultinom(1,1,f)==1)
     }
 
-    # update theta
-    delta<-rep(0,k)
+    # reorder class to avoid label-switching
+    nn<-rep(0,k)
     for(h in 1:k){
-      delta[h]<-length(z[z==h])
+      nn[h]<-length(z[z==h])
     }
 
-    theta<-rdirichlet(1,delta+rep(1,k))
+    o<-order(nn,decreasing = TRUE)
+    nn<-nn[o]
+    z_temp<-z
+    for(h in 1:k){
+      z[z_temp==o[h]]<-h
+    }
+
+    # update theta
+    theta<-rdirichlet(1,nn+rep(1,k))
 
     # update psi
     for(j in 1:p){
@@ -89,16 +93,6 @@ ParEst<-function(data, d, k, T = 1000){
       }
     }
 
-    # reorder to avoid label switching
-    if(k>1){
-      order<-rank(theta)
-
-      theta<-theta[order]
-      for(j in 1:p){
-        psi[[j]]<-psi[[j]][order,]
-      }
-    }
-
     # posterior probability
     pp<-0
     for(i in 1:n){
@@ -107,12 +101,11 @@ ParEst<-function(data, d, k, T = 1000){
       }
     }
 
-    pp_track[t]<-pp
-
     # parameter estimation
-    if(pp==max(pp_track)){
+    if(pp>pp_max){
       theta_est<-theta
       psi_est<-psi
+      pp_max<-pp
     }
   }
 
@@ -121,18 +114,14 @@ ParEst<-function(data, d, k, T = 1000){
     for(h in 1:k){
       psi_est[[j]][h,1:(d[j]-1)]<-psi_est[[j]][h,1:(d[j]-1)]/(1-psi_est[[j]][h,d[j]])
     }
-
     psi_est[[j]]<-psi_est[[j]][,1:(d[j]-1)]
-  }
 
-  # avoid reduce to vector
-  if(k==1){
-    for(j in 1:p){
+    # avoid to reduce to vector
+    if(k==1){
       psi_est[[j]]<-matrix(psi_est[[j]],nrow = 1)
     }
   }
 
   # output
-  return(list(theta = theta_est,psi = psi_est))
-
+  return(list(theta = theta_est, psi = psi_est))
 }

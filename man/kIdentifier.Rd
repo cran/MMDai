@@ -2,16 +2,16 @@
 % Please edit documentation in R/kIdentifier.R
 \name{kIdentifier}
 \alias{kIdentifier}
-\title{Identify the number of components k}
+\title{Identify the suitable number of components k}
 \usage{
-kIdentifier(data, d, T = 1000, alpha = 0.25)
+kIdentifier(data, d, TT = 1000, alpha = 0.25)
 }
 \arguments{
 \item{data}{- data in matrix formation with n rows and p columns}
 
 \item{d}{- number of categories for each variable}
 
-\item{T}{- number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.}
+\item{TT}{- number of iterations in Gibbs sampler, default value is 1000. T should be an even number for 'burn-in'.}
 
 \item{alpha}{- hyperparameter that could be regarded as the pseudo-count of the number of samples in the new component}
 }
@@ -23,4 +23,3 @@ k_track - track of k in the iteration process
 \description{
 This function is used to find the suitable number of components k.
 }
-

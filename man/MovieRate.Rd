@@ -13,4 +13,3 @@ This dataset is used to evaluate the performance of package in real applications
 Chaojie Wang
 }
 \keyword{data}
-
