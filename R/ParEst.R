@@ -8,6 +8,17 @@
 #' @return psi - specific probability for each variable in each component
 #' @import stats
 #' @importFrom DirichletReg rdirichlet
+#' @examples
+#' # dimension parameters
+#' n<-200; p<-5; d<-rep(2,p);
+#' # generate complete data
+#' Complete<-GenerateData(n, p, d, k = 3)
+#' # mask percentage of data at MCAR
+#' Incomplete<-Complete
+#' Incomplete[sample(1:n*p,0.2*n*p,replace = FALSE)]<-NA
+#' # k identify
+#' K<-kIdentifier(data = Incomplete, d, TT = 10)
+#' Par<-ParEst(data = Incomplete, d, k = K$k_est, TT = 10)
 #' @export
 
 ParEst<-function(data, d, k, TT = 1000){
