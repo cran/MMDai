@@ -4,8 +4,14 @@
 \alias{GenerateData}
 \title{Generate random dataset}
 \usage{
-GenerateData(n, p, d, k = 3, theta = rdirichlet(1, rep(10, k)),
-  psi = InitialPsi(p, d, k))
+GenerateData(
+  n,
+  p,
+  d,
+  k = 3,
+  theta = rdirichlet(1, rep(10, k)),
+  psi = InitialPsi(p, d, k)
+)
 }
 \arguments{
 \item{n}{- number of samples}

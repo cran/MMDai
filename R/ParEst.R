@@ -7,7 +7,6 @@
 #' @return theta - vector of probability for each component
 #' @return psi - specific probability for each variable in each component
 #' @import stats
-#' @importFrom DirichletReg rdirichlet
 #' @examples
 #' # dimension parameters
 #' n<-200; p<-5; d<-rep(2,p);

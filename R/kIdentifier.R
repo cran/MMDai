@@ -7,7 +7,6 @@
 #' @return k_est - posterior estimation of k
 #' @return k_track - track of k in the iteration process
 #' @import stats
-#' @importFrom DirichletReg rdirichlet
 #' @examples
 #' # dimension parameters
 #' n<-200; p<-5; d<-rep(2,p);
@@ -20,6 +19,8 @@
 #' K<-kIdentifier(data = Incomplete, d, TT = 10)
 #' @export
 
+# auxiliary functions
+# k identifier
 kIdentifier<-function(data, d, TT = 1000, alpha = 0.25){
   # dimensional parameters
   n<-nrow(data)    # number of observations

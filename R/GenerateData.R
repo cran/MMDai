@@ -7,7 +7,6 @@
 #' @param theta - probability for latent class
 #' @param psi - probability for specific category
 #' @return data - generated random dataset, a matrix with n rows and p columns.
-#' @importFrom DirichletReg rdirichlet
 #' @examples
 #' # dimension parameters
 #' n<-200; p<-5; d<-rep(2,p);

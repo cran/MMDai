@@ -4,7 +4,6 @@
 #' @param d - a vector which denotes the number of categories for each variable. It could be distinct among variables.
 #' @param k - number of components
 #' @return psi - a list in that each component has equal weight
-#' @importFrom DirichletReg rdirichlet
 #' @export
 
 InitialPsi<-function(p, d, k){
